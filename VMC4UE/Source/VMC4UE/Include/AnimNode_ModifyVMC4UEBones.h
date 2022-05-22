@@ -25,6 +25,10 @@ struct VMC4UE_API FAnimNode_ModifyVMC4UEBones : public FAnimNode_SkeletalControl
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Alpha, meta = (PinShownByDefault))
 	int32 Port;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Alpha, meta = (PinShownByDefault))
+	float Scale = 1.0f;
+
+
 	FAnimNode_ModifyVMC4UEBones() {}
 	FAnimNode_ModifyVMC4UEBones(const class FObjectInitializer &ObjectInitializer) {}
 
