@@ -1,6 +1,7 @@
 ## VMC4UE とは
 
 little ducttape patch for "problems with random disconnections" (in reality is just pointers getting wiped)
+
 VirtualMotionCapture から OSC で姿勢情報を受信して UE に反映するためのプラグインです。
 
 動作には sh_akira さんの VirtualMotionCapture(v0.36～) が必要です。
