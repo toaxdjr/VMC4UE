@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "Animation/AnimNodeBase.h"
+#include "../Include/VMC4UEBoneMapping.h"
+#include <map>
 #include "AnimNode_ModifyVMC4UEMorph.generated.h"
 
 class UVMC4UEStreamingSkeletalMeshTransform;
@@ -41,8 +43,16 @@ struct VMC4UE_API FAnimNode_ModifyVMC4UEMorph : public FAnimNode_Base
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ModifyCurve, meta = (PinShownByDefault))
 	TWeakObjectPtr<UVMC4UEVRMMapping> VRMMapping;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Alpha, meta = (PinShownByDefault))
+    float Scale = 100.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ModifyCurve, meta = (PinShownByDefault))
 	int32 Port;
+
+    std::map<int,FVMC4UEVRMMappingData*> VRMMappingDataArray;
+    //FVMC4UEVRMMappingData <array> VRMMappingData;
+    //FVMC4UEVRMMappingData *VRMMappingData = new FVMC4UEVRMMappingData();
+
 
 	FAnimNode_ModifyVMC4UEMorph() {}
 	FAnimNode_ModifyVMC4UEMorph(const class FObjectInitializer &ObjectInitializer) {}
