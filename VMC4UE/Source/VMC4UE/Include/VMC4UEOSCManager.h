@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "Engine/GameInstance.h"
+#include "UEOSC/Include/UEOSCReceiver.h"
+#include "../Include/VMC4UEStreamingData.h"
 #include "VMC4UEOscManager.generated.h"
 
-class UVMC4UEStreamingSkeletalMeshTransform;
-class UUEOSCReceiver;
+//class UVMC4UEStreamingSkeletalMeshTransform;
+//class UUEOSCReceiver;
 
 /**
  * 
@@ -28,6 +30,8 @@ public:
 	TArray<UUEOSCReceiver*> OscReceivers;
 	
 	static UVMC4UEOSCManager* GetInstance();
+
+	void ResetReceiverCallbacks();
 
 private:
 	static UVMC4UEOSCManager* Instance;
