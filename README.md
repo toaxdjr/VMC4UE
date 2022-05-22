@@ -1,6 +1,8 @@
 ## VMC4UE とは
 
-little ducttape patch for "problems with random disconnections" (in reality is just pointers getting wiped)
+little duct tape patch for "problems with random disconnections" (in reality is just pointers getting wiped) 
+MAKE SURE the blueprint BP_RefreshConnection is used once in the world (probably put it on your pawn object or the world)
+
 
 VirtualMotionCapture から OSC で姿勢情報を受信して UE に反映するためのプラグインです。
 
