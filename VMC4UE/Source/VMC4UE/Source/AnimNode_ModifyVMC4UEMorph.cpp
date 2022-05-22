@@ -48,18 +48,22 @@ void FAnimNode_ModifyVMC4UEMorph::Evaluate_AnyThread(FPoseContext &Output)
 	auto StreamingSkeletalMeshTransform = UVMC4UEBlueprintFunctionLibrary::GetStreamingSkeletalMeshTransform(this->Port);
 	if (!StreamingSkeletalMeshTransform.IsValid())
 	{
+		//here
+		UE_LOG(LogTemp, Log, TEXT("Not valid transform"));
 		return;
 	}
 
     //	Morph target and Material parameter curves
     USkeleton *Skeleton = Output.AnimInstanceProxy->GetSkeleton();
-
+	/*
 	if (!VRMMapping.IsValid())
 	{
+		UE_LOG(LogTemp, Log, TEXT("Not valid mapping"));
 		return;
 	}
 	FVMC4UEVRMMappingData& VRMMappingData = VRMMapping.Get()->VRMMapping;
-
+	*/
+	FVMC4UEVRMMappingData* VRMMappingDataIndex = this->VRMMappingDataArray.find(this->Port)->second;
 	// Reset
 	for (auto& MorphState : MorphStates)
 	{
@@ -72,14 +76,14 @@ void FAnimNode_ModifyVMC4UEMorph::Evaluate_AnyThread(FPoseContext &Output)
 
 		for (const auto& BlendShape : StreamingSkeletalMeshTransform->CurrentBlendShapes)
 		{
-			auto Clip = VRMMappingData.BlendShape.Clips.FindByPredicate([BlendShape](const FVMC4UEBlendShapeClip& Clip) {
+			auto Clip = (*VRMMappingDataIndex).BlendShape.Clips.FindByPredicate([BlendShape](const FVMC4UEBlendShapeClip& Clip) {
 				return Clip.Name == BlendShape.Key;
 			});
 			if (Clip == nullptr)
 			{
 				continue;
 			}
-			const auto& Meshes = VRMMappingData.BlendShape.Meshes;
+			const auto& Meshes = (*VRMMappingDataIndex).BlendShape.Meshes;
 
 			for (const auto& State : Clip->States)
 			{
@@ -146,9 +150,13 @@ void FAnimNode_ModifyVMC4UEMorph::BuildMapping()
 	{
 		return;
 	}
-	FVMC4UEVRMMappingData& VRMMappingData = VRMMapping.Get()->VRMMapping;
+	FVMC4UEVRMMappingData VRMMappingDataTemp = VRMMapping.Get()->VRMMapping;
+	FVMC4UEVRMMappingData* VRMMappingData = new FVMC4UEVRMMappingData();
+	(VRMMappingData)->BlendShape = VRMMappingDataTemp.BlendShape;
+	(VRMMappingData)->BoneMapping = VRMMappingDataTemp.BoneMapping;
+	this->VRMMappingDataArray.insert(std::pair<int, FVMC4UEVRMMappingData*>(this->Port, VRMMappingData));
 
-	for (auto& Mesh : VRMMappingData.BlendShape.Meshes)
+	for (auto& Mesh : (*VRMMappingData).BlendShape.Meshes)
 	{
 		for (int32 TargetIndex = 0; TargetIndex < Mesh.Targets.Num(); ++TargetIndex)
 		{
