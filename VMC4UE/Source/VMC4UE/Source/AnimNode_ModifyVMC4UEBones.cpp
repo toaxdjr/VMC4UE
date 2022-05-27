@@ -3,6 +3,7 @@
 #include "BoneControllers/AnimNode_ModifyBone.h"
 #include "AnimationRuntime.h"
 #include "Animation/AnimInstanceProxy.h"
+#include "Misc/EngineVersionComparison.h"
 #include "../Include/VMC4UEStreamingData.h"
 #include "../Include/VMC4UEBoneMapping.h"
 #include "../Include/VMC4UEBlueprintFunctionLibrary.h"
@@ -58,7 +59,7 @@ void FAnimNode_ModifyVMC4UEBones::EvaluateSkeletalControl_AnyThread(FComponentSp
 	
 	// Get SkeletamMesh Transform
 	auto StreamingSkeletalMeshTransform = UVMC4UEBlueprintFunctionLibrary::GetStreamingSkeletalMeshTransform(this->Port);
-	if (!StreamingSkeletalMeshTransform.IsValid())
+	if (!IsValid(StreamingSkeletalMeshTransform))
 	{
 		return;
 	}
@@ -69,7 +70,6 @@ void FAnimNode_ModifyVMC4UEBones::EvaluateSkeletalControl_AnyThread(FComponentSp
     FTransform RootTransform;
     {
 		FVMC4UEStreamingBoneTransform &StreamingData = StreamingSkeletalMeshTransform->Root;
-		StreamingData.Location = StreamingData.Location * this->Scale;
 		RootTransform.SetTranslation(StreamingData.Location);
 		RootTransform.SetRotation(StreamingData.Rotation);
 		RootTransform.SetScale3D(FVector(1.0f, 1.0f, 1.0f));
@@ -144,19 +144,23 @@ void FAnimNode_ModifyVMC4UEBones::InitializeBoneReferences(const FBoneContainer 
 	}
 	
 	// Get Initial Bone Transform
+#if UE_VERSION_OLDER_THAN(5,0,0)
 	this->InitialBones = RequiredBones.GetRefPoseCompactArray();
+#else
+	this->InitialBones = RequiredBones.GetRefPoseArray();
+#endif
 }
 
 void FAnimNode_ModifyVMC4UEBones::BuildMapping()
 {
 	// Build BoneMappingSkeletonToVMC
 	BoneMappingSkeletonToVMC.Empty();
-	if (!VRMMapping.IsValid())
+	if (!IsValid(VRMMapping))
 	{
 		UE_LOG(LogTemp, Error, TEXT("[AnimNode_VMC4UE] BoneMapping is None"));
 		return;
 	}
-	FVMC4UEBoneMapping& BoneMapping = VRMMapping.Get()->VRMMapping.BoneMapping;
+	FVMC4UEBoneMapping& BoneMapping = VRMMapping->VRMMapping.BoneMapping;
 	if (BoneMapping.Hips.Compare("None") != 0)
 		BoneMappingSkeletonToVMC.Emplace(BoneMapping.Hips, TEXT("Hips"));
 	if (BoneMapping.LeftUpperLeg.Compare("None") != 0)
