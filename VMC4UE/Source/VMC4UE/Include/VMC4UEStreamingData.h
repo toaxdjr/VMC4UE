@@ -30,7 +30,6 @@ class VMC4UE_API UVMC4UEStreamingSkeletalMeshTransform : public UObject
 public:
 	FRWLock RWLock;
 	float Time = 0.0f;
-	float Scale = 100.0f;
 	FVMC4UEStreamingBoneTransform Root;
 	TMap<FName, FVMC4UEStreamingBoneTransform> Bones;
 	TMap<FName, float> CurrentBlendShapes;
