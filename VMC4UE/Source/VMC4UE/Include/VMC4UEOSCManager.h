@@ -5,12 +5,10 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "Engine/GameInstance.h"
-#include "UEOSC/Include/UEOSCReceiver.h"
-#include "../Include/VMC4UEStreamingData.h"
 #include "VMC4UEOscManager.generated.h"
 
-//class UVMC4UEStreamingSkeletalMeshTransform;
-//class UUEOSCReceiver;
+class UVMC4UEStreamingSkeletalMeshTransform;
+class UUEOSCReceiver;
 
 /**
  * 
@@ -24,14 +22,12 @@ public:
     FRWLock RWLock;
 
 	UPROPERTY()
-    TMap<int32, UVMC4UEStreamingSkeletalMeshTransform *> StreamingSkeletalMeshTransformMap;
+    TMap<int32, UVMC4UEStreamingSkeletalMeshTransform*> StreamingSkeletalMeshTransformMap;
 
 	UPROPERTY()
 	TArray<UUEOSCReceiver*> OscReceivers;
-	
-	static UVMC4UEOSCManager* GetInstance();
 
-	void ResetReceiverCallbacks();
+	static UVMC4UEOSCManager* GetInstance();
 
 private:
 	static UVMC4UEOSCManager* Instance;
