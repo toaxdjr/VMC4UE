@@ -46,24 +46,20 @@ void FAnimNode_ModifyVMC4UEMorph::Evaluate_AnyThread(FPoseContext &Output)
 
 	// Get SkeletamMesh Transform
 	auto StreamingSkeletalMeshTransform = UVMC4UEBlueprintFunctionLibrary::GetStreamingSkeletalMeshTransform(this->Port);
-	if (!StreamingSkeletalMeshTransform.IsValid())
+	if (!IsValid(StreamingSkeletalMeshTransform))
 	{
-		//here
-		UE_LOG(LogTemp, Log, TEXT("Not valid transform"));
 		return;
 	}
 
     //	Morph target and Material parameter curves
     USkeleton *Skeleton = Output.AnimInstanceProxy->GetSkeleton();
-	/*
-	if (!VRMMapping.IsValid())
+
+	if (!IsValid(this->VRMMapping))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Not valid mapping"));
 		return;
 	}
-	FVMC4UEVRMMappingData& VRMMappingData = VRMMapping.Get()->VRMMapping;
-	*/
-	FVMC4UEVRMMappingData* VRMMappingDataIndex = this->VRMMappingDataArray.find(this->Port)->second;
+	FVMC4UEVRMMappingData& VRMMappingData = this->VRMMapping->VRMMapping;
+
 	// Reset
 	for (auto& MorphState : MorphStates)
 	{
@@ -76,14 +72,14 @@ void FAnimNode_ModifyVMC4UEMorph::Evaluate_AnyThread(FPoseContext &Output)
 
 		for (const auto& BlendShape : StreamingSkeletalMeshTransform->CurrentBlendShapes)
 		{
-			auto Clip = (*VRMMappingDataIndex).BlendShape.Clips.FindByPredicate([BlendShape](const FVMC4UEBlendShapeClip& Clip) {
+			auto Clip = VRMMappingData.BlendShape.Clips.FindByPredicate([BlendShape](const FVMC4UEBlendShapeClip& Clip) {
 				return Clip.Name == BlendShape.Key;
 			});
 			if (Clip == nullptr)
 			{
 				continue;
 			}
-			const auto& Meshes = (*VRMMappingDataIndex).BlendShape.Meshes;
+			const auto& Meshes = VRMMappingData.BlendShape.Meshes;
 
 			for (const auto& State : Clip->States)
 			{
@@ -146,17 +142,13 @@ void FAnimNode_ModifyVMC4UEMorph::RemoveCurve(int32 PoseIndex)
 void FAnimNode_ModifyVMC4UEMorph::BuildMapping()
 {
 	MorphStates.Empty();
-	if (!VRMMapping.IsValid())
+	if (!IsValid(this->VRMMapping))
 	{
 		return;
 	}
-	FVMC4UEVRMMappingData VRMMappingDataTemp = VRMMapping.Get()->VRMMapping;
-	FVMC4UEVRMMappingData* VRMMappingData = new FVMC4UEVRMMappingData();
-	(VRMMappingData)->BlendShape = VRMMappingDataTemp.BlendShape;
-	(VRMMappingData)->BoneMapping = VRMMappingDataTemp.BoneMapping;
-	this->VRMMappingDataArray.insert(std::pair<int, FVMC4UEVRMMappingData*>(this->Port, VRMMappingData));
+	FVMC4UEVRMMappingData& VRMMappingData = VRMMapping->VRMMapping;
 
-	for (auto& Mesh : (*VRMMappingData).BlendShape.Meshes)
+	for (auto& Mesh : VRMMappingData.BlendShape.Meshes)
 	{
 		for (int32 TargetIndex = 0; TargetIndex < Mesh.Targets.Num(); ++TargetIndex)
 		{
