@@ -173,7 +173,7 @@ void UVMC4UEBlueprintFunctionLibrary::RefreshConnection(float Seconds)
 		for (auto& OscReceiver : OSCManager->OscReceivers)
 		{
 			auto Span = Now - OscReceiver->GetLastUpdateTime();
-			if (Span.GetTotalSeconds() > (double)Seconds || OscReceiver->OSCReceiveEventDelegate.IsBound())
+			if (Span.GetTotalSeconds() > (double)Seconds || !OscReceiver->OSCReceiveEventDelegate.IsBound())
 			{
 				OscReceiver->Reconnect();
 				OscReceiver->OSCReceiveEventDelegate.Clear();
